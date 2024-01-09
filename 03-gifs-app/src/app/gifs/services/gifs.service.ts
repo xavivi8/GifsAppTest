@@ -6,7 +6,9 @@ import { Gif, SearchResponse } from "../interfaces/gifs.interfaces";
   providedIn: 'root'
 })
 export class GifsService {
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient) {
+    this.cargarLocalStorage()
+  }
 
   private listadoGifs: Gif[] = []
   private _historialetiquetas: string[] = [];
@@ -63,8 +65,26 @@ export class GifsService {
         console.log({gifs: this.listadoGifs})
       })
     }
+    this.almacenarLocalStorage()
   }
 
+  /**
+   * Para almacenar el historial en el localStorage
+   */
+  private almacenarLocalStorage(): void{
+    localStorage.setItem('historial', JSON.stringify(this._historialetiquetas))
+  }
 
+  /**
+   * si se guardo en el localStorage con la llave historial sacará
+   * el _historialetiquetas
+   * @returns _historialetiquetas
+   */
+  private cargarLocalStorage(): void{
+    if(!localStorage.getItem('historial')) return;
+    this._historialetiquetas = JSON.parse(localStorage.getItem('historial')!);
 
+    if(this._historialetiquetas.length === 0) return;
+    this.buscarEtiqueta(this._historialetiquetas[0])
+  }
 }
